@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\devey\.Rider2019.2\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\devey\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_TaskTracker.-1389042171.00" t="ExcludeRecursive" />
+    <e p="C:\Users\devey\Code\Projects\TaskTracker" t="IncludeFlat">
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="TaskTracker" t="IncludeRecursive">
+        <e p="Actions" t="Include">
+          <e p="Action.cs" t="Include" />
+          <e p="Daily.cs" t="Include" />
+          <e p="Habit.cs" t="Include" />
+          <e p="Reward.cs" t="Include" />
+          <e p="Task.cs" t="Include" />
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Constants.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="TaskTracker.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Printing.cs" t="Include" />
+        <e p="Program.cs" t="Include" />
+        <e p="TaskTracker.csproj" t="IncludeRecursive" />
+        <e p="UserState.cs" t="Include" />
+      </e>
+      <e p="TaskTracker.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>
