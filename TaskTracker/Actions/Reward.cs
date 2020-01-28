@@ -4,6 +4,10 @@ namespace TaskTracker.Actions
 {
 	public class Reward : Action
 	{
+		public Reward()
+		{
+		}
+
 		public Reward(string text, long value) : base(text, value)
 		{
 		}

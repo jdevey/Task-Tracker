@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -8,18 +8,13 @@ namespace TaskTracker
 {
 	public class UserState : IXmlSerializable
 	{
-		public long gold { get; set; } = 0;
-		public long exp { get; set; } = 0;
+		public long gold { get; private set; }
+		public long xp { get; private set; }
 
-		public ArrayList habits = new ArrayList ();
-		public ArrayList dailies = new ArrayList ();
-		public ArrayList tasks = new ArrayList ();
-		public ArrayList rewards = new ArrayList ();
-		
-		public UserState()
-		{
-			
-		}
+		public readonly List<Habit> habits = new List<Habit>();
+		public readonly List<Daily> dailies = new List<Daily>();
+		public readonly List<Task> tasks = new List<Task>();
+		public readonly List<Reward> rewards = new List<Reward>();
 
 		public void addHabit(Habit habit)
 		{
@@ -28,24 +23,21 @@ namespace TaskTracker
 
 		public void removeHabit(int pos)
 		{
-			if (pos < 0 || pos >= habits.Count)
+			if (pos >= 0 && pos < habits.Count)
 			{
-				return;
+				habits.Remove(habits[pos]);
 			}
-			habits.Remove(habits[pos]);
 		}
 
 		public void fulfillHabit(int pos)
 		{
-			if (pos < 0 || pos >= habits.Count)
+			if (pos >= 0 && pos < habits.Count)
 			{
-				return;
+				Habit habit = habits[pos];
+				gold += habit.value * (habit.habitType == Habit.HabitType.Positive ? 1 : -1);
 			}
-
-			Habit habit = (habits[pos] as Habit);
-			gold += habit.value * (habit.habitType == Habit.HabitType.Positive ? 1 : -1);
 		}
-		
+
 		public void addDaily(Daily daily)
 		{
 			dailies.Add(daily);
@@ -53,24 +45,21 @@ namespace TaskTracker
 
 		public void removeDaily(int pos)
 		{
-			if (pos < 0 || pos >= dailies.Count)
+			if (pos >= 0 && pos < dailies.Count)
 			{
-				return;
+				dailies.Remove(dailies[pos]);
 			}
-			dailies.Remove(dailies[pos]);
 		}
 
 		public void fulfillDaily(int pos)
 		{
-			if (pos < 0 || pos >= dailies.Count)
+			if (pos >= 0 && pos < dailies.Count)
 			{
-				return;
+				Daily daily = dailies[pos];
+				gold += daily.value;
 			}
-
-			Daily daily = dailies[pos] as Daily;
-			gold += daily.value;
 		}
-		
+
 		public void addTask(Task task)
 		{
 			tasks.Add(task);
@@ -78,23 +67,21 @@ namespace TaskTracker
 
 		public void removeTask(int pos)
 		{
-			if (pos < 0 || pos >= tasks.Count)
+			if (pos >= 0 && pos < tasks.Count)
 			{
-				return;
+				tasks.Remove(tasks[pos]);
 			}
-			tasks.Remove(tasks[pos]);
 		}
 
 		public void fulfillTask(int pos)
 		{
-			if (pos < 0 || pos >= tasks.Count)
+			if (pos >= 0 && pos < tasks.Count)
 			{
-				return;
+				Task task = tasks[pos];
+				gold += task.value;
 			}
-			Task task = tasks[pos] as Task;
-			gold += task.value;
 		}
-		
+
 		public void addReward(Reward reward)
 		{
 			rewards.Add(reward);
@@ -102,23 +89,20 @@ namespace TaskTracker
 
 		public void removeReward(int pos)
 		{
-			if (pos < 0 || pos >= rewards.Count)
+			if (pos >= 0 && pos < rewards.Count)
 			{
-				return;
+				rewards.Remove(rewards[pos]);
 			}
-			rewards.Remove(rewards[pos]);
 		}
 
 		public void fulfillReward(int pos)
 		{
-			if (pos < 0 || pos >= rewards.Count)
+			if (pos >= 0 && pos < rewards.Count)
 			{
-				return;
+				Reward reward = rewards[pos];
+				gold += reward.value;
+				removeReward(pos);
 			}
-
-			Reward reward = rewards[pos] as Reward;
-			gold += reward.value;
-			removeReward(pos);
 		}
 
 		private long getNextLevelAmt(long n)
@@ -129,13 +113,13 @@ namespace TaskTracker
 		public long getLevel()
 		{
 			long levelCnt = 0;
-			long baseExp = Constants.EXP_BASE;
-			long expTotal = baseExp;
-			while (exp >= expTotal)
+			long basexp = Constants.XP_BASE;
+			long xpTotal = basexp;
+			while (xp >= xpTotal)
 			{
 				++levelCnt;
-				baseExp = getNextLevelAmt(baseExp);
-				expTotal += baseExp;
+				basexp = getNextLevelAmt(basexp);
+				xpTotal += basexp;
 			}
 
 			return levelCnt;
@@ -143,14 +127,108 @@ namespace TaskTracker
 
 		public void WriteXml(XmlWriter writer)
 		{
-			// TODO
+			writer.WriteStartElement("gold");
+			writer.WriteValue(gold);
+			writer.WriteEndElement();
+			writer.WriteStartElement("xp");
+			writer.WriteValue(xp);
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("Habits");
+			foreach (Habit habit in habits)
+			{
+				habit.WriteXml(writer);
+			}
+
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("Dailies");
+			foreach (Daily daily in dailies)
+			{
+				daily.WriteXml(writer);
+			}
+
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("Tasks");
+			foreach (Task task in tasks)
+			{
+				task.WriteXml(writer);
+			}
+
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("Rewards");
+			foreach (Reward reward in rewards)
+			{
+				reward.WriteXml(writer);
+			}
+
+			writer.WriteEndElement();
 		}
 
 		public void ReadXml(XmlReader reader)
 		{
-			// TODO
+			reader.ReadStartElement();
+			gold = long.Parse(reader.ReadInnerXml());
+			xp = long.Parse(reader.ReadInnerXml());
+			
+			// Read habits
+			bool isEmpty = reader.IsEmptyElement;
+			reader.ReadStartElement();
+			if (!isEmpty)
+			{
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					Habit habit = new Habit();
+					habit.ReadXml(reader);
+					habits.Add(habit);
+				}
+			}
+
+			// Read dailies
+			isEmpty = reader.IsEmptyElement;
+			reader.ReadStartElement();
+			if (!isEmpty)
+			{
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					Daily daily = new Daily();
+					daily.ReadXml(reader);
+					dailies.Add(daily);
+				}
+			}
+
+			// Read tasks
+			isEmpty = reader.IsEmptyElement;
+			reader.ReadStartElement();
+			if (!isEmpty)
+			{
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					Task task = new Task();
+					task.ReadXml(reader);
+					tasks.Add(task);
+				}
+			}
+
+			// Read rewards
+			isEmpty = reader.IsEmptyElement;
+			reader.ReadStartElement();
+			if (!isEmpty)
+			{
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					Reward reward = new Reward();
+					reward.ReadXml(reader);
+					rewards.Add(reward);
+				}
+			}
+
+			reader.ReadEndElement();
+			reader.ReadEndElement();
 		}
-		
+
 		public XmlSchema GetSchema()
 		{
 			return null;

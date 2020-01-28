@@ -3,7 +3,6 @@ using System.Xml;
 
 namespace TaskTracker.Actions
 {
-	// TODO add streaks?
 	public class Habit : Action
 	{
 		public enum HabitType
@@ -13,6 +12,10 @@ namespace TaskTracker.Actions
 		}
 		
 		public HabitType habitType;
+
+		public Habit()
+		{
+		}
 
 		public Habit(string text, long value, HabitType habitType) : base(text, value)
 		{

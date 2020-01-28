@@ -9,6 +9,10 @@ namespace TaskTracker.Actions
 		public string text;
 		public long value;
 
+		public Action()
+		{
+		}
+
 		public Action(string text, long value)
 		{
 			this.text = text;

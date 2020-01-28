@@ -2,9 +2,10 @@
 
 namespace TaskTracker.Actions
 {
-	// TODO add timestamps?
 	public class Daily : Action
 	{
+		public Daily() {}
+		
 		public Daily(string text, long value) : base(text, value)
 		{
 		}

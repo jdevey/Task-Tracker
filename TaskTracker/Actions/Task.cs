@@ -4,6 +4,10 @@ namespace TaskTracker.Actions
 {
 	public class Task : Action
 	{
+		public Task()
+		{
+		}
+
 		public Task(string text, long value) : base(text, value)
 		{
 		}
